@@ -1,0 +1,35 @@
+<!doctype html><html lang="bn"><head><meta charset="utf-8"><meta name="viewport" content="width=device-width,initial-scale=1"><title>ALHAZ RAJBARI LIVE | OBS Overlay</title>
+<style>
+:root{--gold:#f4c45e;--red:#e62d42;--speed:24s;--size:18px}*{box-sizing:border-box}html,body{margin:0;width:100%;height:100%;overflow:hidden;background:transparent!important;font-family:Arial,"Noto Sans Bengali",sans-serif;color:#fff}#root{position:fixed;inset:0;background:transparent;pointer-events:none}
+#logo{position:absolute;top:3.5%;left:3%;width:10%;max-height:15%;object-fit:contain;filter:drop-shadow(0 3px 8px #000);display:none}#brand{position:absolute;top:4%;left:3%;font-weight:1000;font-size:clamp(18px,2.1vw,34px);text-shadow:0 2px 7px #000}#tag{font-size:clamp(9px,.9vw,14px);color:var(--gold);letter-spacing:2px}
+#clock{position:absolute;right:3%;top:3.5%;text-align:right;font-weight:900;text-shadow:0 2px 8px #000;color:var(--gold);font-size:clamp(20px,2vw,32px)}#date{font-size:clamp(10px,.9vw,15px);color:#fff}
+#live{position:absolute;right:3%;top:12%;background:var(--red);padding:7px 15px;border-radius:3px;font-weight:900;font-size:clamp(12px,1.1vw,17px);box-shadow:0 3px 10px #000}
+#lower{position:absolute;left:3%;bottom:7%;max-width:76%;filter:drop-shadow(0 3px 12px #000)}#strap{display:table;background:var(--gold);color:#151515;font-weight:900;padding:6px 16px;font-size:clamp(12px,1.1vw,17px)}#lowerbody{background:linear-gradient(90deg,#071a2bf2,#102d42e8);border-left:7px solid var(--red);padding:11px 20px}#title{font-weight:900;font-size:clamp(20px,2.3vw,36px)}#subtitle{font-size:clamp(12px,1.1vw,18px);color:var(--gold);margin-top:3px}
+#breaking{position:absolute;left:0;right:0;bottom:16%;height:42px;display:flex;filter:drop-shadow(0 3px 10px #000)}#breakinglabel{background:var(--red);display:flex;align-items:center;padding:0 20px;font-weight:900;white-space:nowrap}#breakingtext{background:#111c2aee;flex:1;display:flex;align-items:center;overflow:hidden;border-block:2px solid var(--gold)}.marquee{display:inline-block;white-space:nowrap;padding-left:100%;animation:marquee var(--speed) linear infinite;font-size:var(--size);font-weight:750}@keyframes marquee{to{transform:translateX(-100%)}}
+#ticker{position:absolute;bottom:0;left:0;right:0;height:30px;background:#07121fee;border-top:1px solid var(--gold);overflow:hidden;display:flex;align-items:center}#ticker .marquee{font-size:clamp(12px,1vw,16px)}
+#location{position:absolute;right:3%;bottom:4%;font-size:clamp(10px,.9vw,14px);font-weight:800;color:#fff;text-shadow:0 2px 6px #000}
+#connection{position:fixed;left:10px;top:10px;background:#9a1b2b;color:white;padding:4px 8px;border-radius:4px;font:12px Arial;display:none}
+</style></head><body><div id="root">
+<img id="logo"><div id="brand"><span id="brandname">ALHAZ RAJBARI</span><div id="tag">OFFICIAL LIVE BROADCAST</div></div>
+<div id="clock"><span id="time"></span><div id="date"></div></div><div id="live">● LIVE</div>
+<div id="breaking"><div id="breakinglabel">BREAKING NEWS</div><div id="breakingtext"><span class="marquee" id="headline">জরুরি সংবাদ: ALHAZ RAJBARI LIVE সম্প্রচার চলছে</span></div></div>
+<div id="lower"><div id="strap">ALHAZ RAJBARI LIVE</div><div id="lowerbody"><div id="title">আপনার অনুষ্ঠানের শিরোনাম</div><div id="subtitle">লাইভ সম্প্রচার • বাংলাদেশ</div></div></div>
+<div id="ticker"><span class="marquee" id="tickertext">ALHAZ RAJBARI LIVE — আপনাদের সবাইকে স্বাগতম</span></div><div id="location">RAJBARI • BANGLADESH</div></div>
+<div id="connection">CONNECTING…</div>
+<script type="module">
+import { createClient } from 'https://cdn.jsdelivr.net/npm/@supabase/supabase-js@2/+esm';
+const params=new URLSearchParams(location.search);const SUPABASE_URL=params.get('supabaseUrl')||'PASTE_SUPABASE_URL_HERE';const SUPABASE_PUBLISHABLE_KEY=params.get('supabaseKey')||'PASTE_SUPABASE_PUBLISHABLE_KEY_HERE';
+const $=id=>document.getElementById(id);const room=params.get('room');let sb,channel;
+function showError(t){$('connection').style.display='block';$('connection').textContent=t}
+function apply(s){if(!s)return;const set=(id,v)=>{if(v!==undefined)$(id).textContent=v};
+set('brandname',s.channelName);set('tag',s.tagline);set('title',s.title);set('subtitle',s.subtitle);set('strap',s.strap);set('headline',s.breaking);set('breakinglabel',s.breakingLabel);set('tickertext',s.ticker);set('location',s.location);
+document.documentElement.style.setProperty('--red',s.accent||'#e62d42');document.documentElement.style.setProperty('--speed',Math.max(8,Math.min(60,Number(s.speed)||24))+'s');document.documentElement.style.setProperty('--size',Math.max(12,Math.min(30,Number(s.tickerSize)||18))+'px');
+$('lower').style.display=s.showLower===false?'none':'block';$('breaking').style.display=s.showBreaking===false?'none':'flex';$('ticker').style.display=s.showTicker===false?'none':'flex';$('clock').style.display=(s.showClock===false||s.clockOn==='false')?'none':'block';
+$('live').textContent='● '+(s.liveState||'LIVE');$('live').style.background=s.liveState==='OFF AIR'?'#555':(s.liveState==='REPLAY'?'#2464a5':'var(--red)');
+$('logo').style.width=(Math.max(4,Math.min(24,Number(s.logoWidth)||10)))+'%';let pos=s.logoPosition||'tl';$('logo').style.top=pos.startsWith('t')?'3.5%':'auto';$('logo').style.bottom=pos.startsWith('b')?'5%':'auto';$('logo').style.left=pos.endsWith('l')?'3%':'auto';$('logo').style.right=pos.endsWith('r')?'3%':'auto';
+if(s.logoUrl){$('logo').src=s.logoUrl;$('logo').style.display='block';$('brand').style.display='none'}else{$('logo').style.display='none';$('brand').style.display='block'}
+if(s.breakingPosition==='bottom')$('breaking').style.bottom='4.5%';else $('breaking').style.bottom='16%';
+}
+async function start(){if(!room){showError('ROOM LINK MISSING');return}if(SUPABASE_URL.includes('PASTE_')){showError('OVERLAY CONFIG NOT SET');return}try{sb=createClient(SUPABASE_URL,SUPABASE_PUBLISHABLE_KEY);let {error:authError}=await sb.auth.signInAnonymously();if(authError)throw authError;channel=sb.channel('alhaz-live:'+room,{config:{private:true,broadcast:{self:false}}});channel.on('broadcast',{event:'graphics'},({payload})=>{apply(payload);$('connection').style.display='none'}).subscribe(async status=>{if(status==='SUBSCRIBED'){let {data,error}=await sb.from('broadcast_state').select('payload').eq('topic','alhaz-live:'+room).maybeSingle();if(error)throw error;if(data?.payload)apply(data.payload);$('connection').style.display='none'}else if(status==='CHANNEL_ERROR'||status==='TIMED_OUT')showError('REALTIME CONNECTION ERROR')})}catch(e){showError('CONNECT ERROR: '+e.message)}}
+function clock(){let d=new Date();$('time').textContent=d.toLocaleTimeString('en-GB');$('date').textContent=d.toLocaleDateString('bn-BD',{year:'numeric',month:'long',day:'numeric'})}clock();setInterval(clock,1000);start();
+</script></body></html>
